@@ -19,8 +19,14 @@ const Winner = ({ votes, anecdotes }) => {
   const index = votes.indexOf(maxVotes);
   return (
     <div>
-      <h2>Anecdote with most votes</h2>
-      <p>{anecdotes[index]}</p>
+      {votes.some((vote) => vote > 0) ? (
+        <>
+          <h2>Anecdote with most votes</h2>
+          <p>{anecdotes[index]}</p>
+        </>
+      ) : (
+        <p>No votes yet. Start voting anecdotes</p>
+      )}
     </div>
   );
 };
@@ -56,11 +62,7 @@ const App = () => {
       <Anecdote content={anecdotes[selected]} votes={votes[selected]} />
       <Button text={"vote"} handleClick={handleVotes} />
       <Button text={"next anecdote"} handleClick={handleNextAnecdote} />
-      {votes.some((vote) => vote > 0) ? (
-        <Winner votes={votes} anecdotes={anecdotes} />
-      ) : (
-        <p>No votes yet. Start voting anecdotes</p>
-      )}
+      <Winner votes={votes} anecdotes={anecdotes} />
     </div>
   );
 };
