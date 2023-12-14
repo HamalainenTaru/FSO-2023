@@ -16,8 +16,6 @@ const Anecdote = ({ content, votes }) => {
 
 const Winner = ({ votes, anecdotes }) => {
   const maxVotes = Math.max(...votes);
-  console.log(maxVotes);
-  console.log(maxVotes);
   const index = votes.indexOf(maxVotes);
   return (
     <div>
@@ -39,11 +37,9 @@ const App = () => {
     "The only way to go fast, is to go well.",
   ];
 
-  // states
   const [selected, setSelected] = useState(0);
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0));
 
-  // functions
   const handleNextAnecdote = () => {
     const rand = Math.floor(Math.random() * anecdotes.length);
     setSelected(rand);
