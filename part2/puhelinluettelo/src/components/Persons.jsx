@@ -1,13 +1,12 @@
 import Person from "./Person";
 
 export default function Persons({ persons, formState, namesToShow }) {
+  const personList = formState.nameToFilter ? namesToShow : persons;
   return (
     <div>
-      {!formState.nameToFilter
-        ? persons.map((person) => <Person key={person.name} person={person} />)
-        : namesToShow.map((person) => (
-            <Person key={person.name} person={person} />
-          ))}
+      {personList.map((person) => (
+        <Person key={person.name} person={person} />
+      ))}
     </div>
   );
 }
