@@ -1,9 +1,10 @@
 import { useEffect, useReducer, useState } from "react";
-import axios from "axios";
 import AddPersonForm from "./components/AddPersonForm";
 import Persons from "./components/Persons";
 import Filter from "./components/Filter";
+import server from "./services/server";
 
+// reducer for form
 const formInitialState = { name: "", number: "", nameToFilter: "" };
 const formReducer = (state, action) => {
   switch (action.type) {
@@ -21,10 +22,9 @@ export default function App() {
   const [persons, setPersons] = useState([]);
   const [formState, dispatch] = useReducer(formReducer, formInitialState);
 
+  // getting data from json server
   useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
+    server.getAll().then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -35,8 +35,12 @@ export default function App() {
       name: formState.name,
       number: formState.number,
     };
-    setPersons([...persons, newPerson]);
-    dispatch({ type: "reset" });
+
+    // posting data to json server
+    server.create(newPerson).then((response) => {
+      setPersons([...persons, response.data]);
+      dispatch({ type: "reset" });
+    });
   };
 
   const namesToShow = persons.filter((person) =>
