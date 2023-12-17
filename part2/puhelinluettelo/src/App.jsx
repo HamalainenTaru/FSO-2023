@@ -9,7 +9,6 @@ const formInitialState = { name: "", number: "", nameToFilter: "" };
 const formReducer = (state, action) => {
   switch (action.type) {
     case "Input Text":
-      console.log([action.field]);
       return { ...state, [action.field]: action.payload };
     case "reset":
       return formInitialState;
@@ -43,6 +42,15 @@ export default function App() {
     });
   };
 
+  const deletePerson = (id) => {
+    const person = persons.find((p) => p.id === id);
+
+    if (window.confirm(`Delete ${person.name} from phonebook? `)) {
+      server.remove(id);
+      setPersons(persons.filter((person) => person.id !== id));
+    }
+  };
+
   const namesToShow = persons.filter((person) =>
     person.name.toLowerCase().includes(formState.nameToFilter.toLowerCase())
   );
@@ -63,6 +71,7 @@ export default function App() {
         persons={persons}
         namesToShow={namesToShow}
         formState={formState}
+        onDeletePerson={deletePerson}
       />
     </div>
   );
