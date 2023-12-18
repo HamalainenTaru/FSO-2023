@@ -11,7 +11,7 @@ export default function Persons({
     <div>
       {personList.map((person) => (
         <Person
-          key={person.name}
+          key={person.id}
           person={person}
           onDeletePerson={onDeletePerson}
         />
