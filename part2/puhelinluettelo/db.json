@@ -2,17 +2,17 @@
   "persons": [
     {
       "name": "Dan Abramov",
-      "number": "12-43-234345",
+      "number": "4800",
       "id": 3
     },
     {
       "name": "Taru Hämäläinen",
-      "number": "0440363553",
+      "number": "10",
       "id": 4
     },
     {
       "name": "Test Person",
-      "number": "1000",
+      "number": "300",
       "id": 5
     }
   ]

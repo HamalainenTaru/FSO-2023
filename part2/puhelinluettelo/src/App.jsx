@@ -35,11 +35,36 @@ export default function App() {
       number: formState.number,
     };
 
-    // posting data to json server
-    server.create(newPerson).then((response) => {
-      setPersons([...persons, response.data]);
+    // dont add person without name or number
+    if (!formState.name || !formState.number) return;
+
+    // check if name is already in phonebook
+    const nameList = persons.map((person) => person.name);
+    const existingPerson = nameList.includes(newPerson.name);
+
+    // if person is not in phonebook
+    if (!existingPerson) {
+      // post new person to server
+      server.create(newPerson).then((response) => {
+        setPersons([...persons, response.data]);
+        dispatch({ type: "reset" });
+      });
+      // person is already in phonebook. Change number to new one
+    } else {
+      if (
+        window.confirm(
+          `${newPerson.name} is already in phonebook. Change old number to new one (${newPerson.number}) ?`
+        )
+      ) {
+        const person = persons.find((p) => p.name === newPerson.name);
+        const updatedPerson = { ...person, number: newPerson.number };
+        server.update(person.id, updatedPerson);
+        setPersons(
+          persons.map((p) => (p.id !== person.id ? p : updatedPerson))
+        );
+      }
       dispatch({ type: "reset" });
-    });
+    }
   };
 
   const deletePerson = (id) => {
@@ -54,6 +79,7 @@ export default function App() {
   const namesToShow = persons.filter((person) =>
     person.name.toLowerCase().includes(formState.nameToFilter.toLowerCase())
   );
+
   return (
     <div>
       <h2>Phonebook</h2>
