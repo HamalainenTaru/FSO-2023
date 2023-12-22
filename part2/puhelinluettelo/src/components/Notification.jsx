@@ -1,13 +1,3 @@
-const style = {
-  color: "green",
-  backgroundColor: "lightgray",
-  border: "3px solid",
-  padding: "10px",
-  borderRadius: "5px",
-  fontSize: "20px",
-  marginBottom: "10px",
-};
-
 const success = {
   color: "green",
   backgroundColor: "lightgray",
