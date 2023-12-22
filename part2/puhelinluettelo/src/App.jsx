@@ -33,6 +33,21 @@ export default function App() {
     });
   }, []);
 
+  // handle time out of error message when changing error object
+  useEffect(() => {
+    let timer = null;
+
+    if (error.message) {
+      timer = setTimeout(() => {
+        setError({ ...error, message: null });
+      }, 5000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [error]);
+
   const addNewPerson = (e) => {
     e.preventDefault();
     const newPerson = {
@@ -54,9 +69,6 @@ export default function App() {
         setPersons([...persons, response.data]);
         dispatch({ type: "reset" });
         setError({ message: `Added ${newPerson.name}`, type: SUCCESS });
-        setTimeout(() => {
-          setError({ ...error, message: null });
-        }, 5000);
       });
       // person is already in phonebook. Change number to new one
     } else {
@@ -77,10 +89,6 @@ export default function App() {
               message: `${updatedPerson.name}'s number was updated`,
               type: SUCCESS,
             });
-
-            setTimeout(() => {
-              setError({ ...error, message: null });
-            }, 5000);
           })
           .catch((error) => {
             console.log(error);
@@ -88,9 +96,6 @@ export default function App() {
               message: `Information of ${person.name} was already removed from server`,
               type: FAIL,
             });
-            setTimeout(() => {
-              setError({ ...error, message: null });
-            }, 5000);
           });
       }
       dispatch({ type: "reset" });
@@ -106,10 +111,6 @@ export default function App() {
         .then(() => {
           setPersons(persons.filter((person) => person.id !== id));
           setError({ message: `${person.name} was removed`, type: "success" });
-
-          setTimeout(() => {
-            setError({ ...error, message: null });
-          }, 5000);
         })
         .catch((error) => {
           console.log(error);
