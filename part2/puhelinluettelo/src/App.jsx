@@ -3,6 +3,7 @@ import AddPersonForm from "./components/AddPersonForm";
 import Persons from "./components/Persons";
 import Filter from "./components/Filter";
 import server from "./services/server";
+import Notification from "./components/Notification";
 
 // reducer for form
 const formInitialState = { name: "", number: "", nameToFilter: "" };
@@ -17,9 +18,13 @@ const formReducer = (state, action) => {
   }
 };
 
+const SUCCESS = "success";
+const FAIL = "fail";
+
 export default function App() {
   const [persons, setPersons] = useState([]);
   const [formState, dispatch] = useReducer(formReducer, formInitialState);
+  const [error, setError] = useState({ message: null, type: SUCCESS });
 
   // getting data from json server
   useEffect(() => {
@@ -48,6 +53,10 @@ export default function App() {
       server.create(newPerson).then((response) => {
         setPersons([...persons, response.data]);
         dispatch({ type: "reset" });
+        setError({ message: `Added ${newPerson.name}`, type: SUCCESS });
+        setTimeout(() => {
+          setError({ ...error, message: null });
+        }, 5000);
       });
       // person is already in phonebook. Change number to new one
     } else {
@@ -58,10 +67,31 @@ export default function App() {
       ) {
         const person = persons.find((p) => p.name === newPerson.name);
         const updatedPerson = { ...person, number: newPerson.number };
-        server.update(person.id, updatedPerson);
-        setPersons(
-          persons.map((p) => (p.id !== person.id ? p : updatedPerson))
-        );
+        server
+          .update(person.id, updatedPerson)
+          .then((response) => {
+            setPersons(
+              persons.map((p) => (p.id !== person.id ? p : response.data))
+            );
+            setError({
+              message: `${updatedPerson.name}'s number was updated`,
+              type: SUCCESS,
+            });
+
+            setTimeout(() => {
+              setError({ ...error, message: null });
+            }, 5000);
+          })
+          .catch((error) => {
+            console.log(error);
+            setError({
+              message: `Information of ${person.name} was already removed from server`,
+              type: FAIL,
+            });
+            setTimeout(() => {
+              setError({ ...error, message: null });
+            }, 5000);
+          });
       }
       dispatch({ type: "reset" });
     }
@@ -71,8 +101,23 @@ export default function App() {
     const person = persons.find((p) => p.id === id);
 
     if (window.confirm(`Delete ${person.name} from phonebook? `)) {
-      server.remove(id);
-      setPersons(persons.filter((person) => person.id !== id));
+      server
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+          setError({ message: `${person.name} was removed`, type: "success" });
+
+          setTimeout(() => {
+            setError({ ...error, message: null });
+          }, 5000);
+        })
+        .catch((error) => {
+          console.log(error);
+          setError({
+            message: `${person.name} was already removed from server`,
+            type: FAIL,
+          });
+        });
     }
   };
 
@@ -83,6 +128,7 @@ export default function App() {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification error={error} />
       <Filter dispatch={dispatch} formState={formState} />
 
       <h3>Add new person</h3>
