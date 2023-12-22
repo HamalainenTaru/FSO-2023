@@ -110,7 +110,7 @@ export default function App() {
         .remove(id)
         .then(() => {
           setPersons(persons.filter((person) => person.id !== id));
-          setError({ message: `${person.name} was removed`, type: "success" });
+          setError({ message: `${person.name} was removed`, type: SUCCESS });
         })
         .catch((error) => {
           console.log(error);
