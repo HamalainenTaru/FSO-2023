@@ -9,7 +9,7 @@ export default function App() {
 
   const countriesToShow = countries?.filter((country) =>
     filter
-      ? country.name.common.toLowerCase().startsWith(filter.toLowerCase())
+      ? country.name.common.toLowerCase().includes(filter.toLowerCase())
       : null
   );
 

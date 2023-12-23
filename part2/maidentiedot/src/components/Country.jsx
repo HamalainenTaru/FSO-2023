@@ -1,3 +1,5 @@
+import Weather from "./Weather";
+
 export default function Country({ country }) {
   if (!country) return null;
   return (
@@ -13,6 +15,8 @@ export default function Country({ country }) {
         ))}
       </ul>
       <img src={country.flags.png} alt={country.flags.alt} />
+
+      <Weather country={country} />
     </div>
   );
 }
