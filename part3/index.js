@@ -7,6 +7,7 @@ app.use(cors());
 morgan.token("body", (request) => JSON.stringify(request.body));
 app.use(express.json());
 app.use(morgan("tiny"));
+app.use(express.static("dist"));
 
 let persons = [
   { id: 1, name: "Arto Hellas", number: "040-123456" },
