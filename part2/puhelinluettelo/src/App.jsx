@@ -65,11 +65,22 @@ export default function App() {
     // if person is not in phonebook
     if (!existingPerson) {
       // post new person to server
-      server.create(newPerson).then((response) => {
-        setPersons([...persons, response.data]);
-        dispatch({ type: "reset" });
-        setError({ message: `Added ${newPerson.name}`, type: SUCCESS });
-      });
+      server
+        .create(newPerson)
+        .then((response) => {
+          setPersons([...persons, response.data]);
+          dispatch({ type: "reset" });
+          setError({ message: `Added ${newPerson.name}`, type: SUCCESS });
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          setError({
+            ...error,
+            message: error.response.data.error,
+            type: FAIL,
+          });
+          dispatch({ type: "reset" });
+        });
       // person is already in phonebook. Change number to new one
     } else {
       if (
