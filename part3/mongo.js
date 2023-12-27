@@ -1,8 +1,5 @@
 const mongoose = require("mongoose");
 
-// taru
-// mongodb+srv://thamalainen1990:<password>@phonebook.uyloztx.mongodb.net/?retryWrites=true&w=majority
-
 if (process.argv.length < 3) {
   console.log("Give password as argument");
   process.exit(1);
