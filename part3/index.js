@@ -12,12 +12,12 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(express.static("dist"));
 
-let persons = [
-  { id: 1, name: "Arto Hellas", number: "040-123456" },
-  { id: 2, name: "Ada Lovelace", number: "39-44-5323523" },
-  { id: 3, name: "Dan Abramov", number: "12-43-234345" },
-  { id: 4, name: "Mary Poppendick", number: "39-23-6423122" },
-];
+// // let persons = [
+// //   { id: 1, name: "Arto Hellas", number: "040-123456" },
+// //   { id: 2, name: "Ada Lovelace", number: "39-44-5323523" },
+// //   { id: 3, name: "Dan Abramov", number: "12-43-234345" },
+// //   { id: 4, name: "Mary Poppendick", number: "39-23-6423122" },
+// // ];
 
 // getting all persons
 app.get("/api/persons", (request, response) => {
@@ -48,9 +48,10 @@ app.get("/api/persons/:id", (request, response) => {
 
 // delete person
 app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id !== id);
-  response.status(204).end();
+  const id = request.params.id;
+  Person.findByIdAndDelete(id).then((result) => {
+    response.status(204).end();
+  });
 });
 
 const morgan_post = morgan(
@@ -62,10 +63,10 @@ app.post("/api/persons", morgan_post, (request, response, next) => {
   if (!body.name) return response.status(400).json({ error: "name missing" });
   if (!body.number)
     return response.status(400).json({ error: "number missing" });
-  if (persons.map((person) => person.name).includes(body.name))
-    return response
-      .status(400)
-      .json({ error: "name is already added to phonebook" });
+  // // if (persons.map((person) => person.name).includes(body.name))
+  // //   return response
+  // //     .status(400)
+  // //     .json({ error: "name is already added to phonebook" });
 
   const person = new Person({
     name: body.name,
