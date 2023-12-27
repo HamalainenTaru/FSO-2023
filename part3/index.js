@@ -5,6 +5,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 app.use(cors());
 
+const Person = require("./models/person");
+
 morgan.token("body", (request) => JSON.stringify(request.body));
 app.use(express.json());
 app.use(morgan("tiny"));
@@ -19,27 +21,29 @@ let persons = [
 
 // getting all persons
 app.get("/api/persons", (request, response) => {
-  return response.json(persons);
+  Person.find({}).then((persons) => response.json(persons));
 });
 
 // info page
 app.get("/info", (request, response) => {
-  const now = new Date();
-  response.send(
-    `<p>Phonebook has info for ${persons.length} people <br>${now}`
-  );
+  Person.find({}).then((persons) => {
+    const now = new Date();
+    response.send(
+      `<p>Phonebook has info for ${persons.length} people <br>${now}`
+    );
+  });
 });
 
 // get person by id
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  const id = request.params.id;
+  Person.findById(id).then((person) => {
+    if (person) {
+      response.json(person);
+    } else {
+      response.status(400).end();
+    }
+  });
 });
 
 // delete person
@@ -63,14 +67,14 @@ app.post("/api/persons", morgan_post, (request, response, next) => {
       .status(400)
       .json({ error: "name is already added to phonebook" });
 
-  const person = {
-    id: Math.floor(Math.random() * 5000),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
 
-  persons = [...persons, person];
-  response.json(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 const PORT = process.env.PORT || 3001;
