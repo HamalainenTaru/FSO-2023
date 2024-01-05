@@ -65,6 +65,7 @@ test("dummy returns one", () => {
   expect(listHelper.dummy([])).toBe(1);
 });
 
+// Testing for total likes
 describe("total likes", () => {
   test("of empty list is zero", () => {
     const blogs = [];
@@ -81,6 +82,7 @@ describe("total likes", () => {
   });
 });
 
+// testing for favorite blog
 describe("favorite blog", () => {
   test("when list has only one blog and likes are more than 0 equals blog to be that", () => {
     const favorite = {
@@ -118,5 +120,29 @@ describe("favorite blog", () => {
     };
     const result = listHelper.favoriteBlog(blogs);
     expect(result).toEqual(favorite);
+  });
+});
+
+// testing for author with most blogs
+describe("most blogs", () => {
+  test("list of blogs is empty", () => {
+    const result = listHelper.mostBlogs([]);
+    expect(result).toEqual({});
+  });
+  test("list has only one blog", () => {
+    const authorAndBlogs = {
+      author: "Edsger W. Dijkstra",
+      blogs: 1,
+    };
+    const result = listHelper.mostBlogs(listWithOneBlog);
+    expect(result).toEqual(authorAndBlogs);
+  });
+  test("List has multiple blogs", () => {
+    const authorAndBlogs = {
+      author: "Robert C. Martin",
+      blogs: 3,
+    };
+    const result = listHelper.mostBlogs(blogs);
+    expect(result).toEqual(authorAndBlogs);
   });
 });

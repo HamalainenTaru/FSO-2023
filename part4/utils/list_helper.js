@@ -17,8 +17,27 @@ const favoriteBlog = (blogs) => {
 };
 
 const mostBlogs = (blogs) => {
-  // TODO: palauta author, jolla on eniten blogeja
-  // palauta author ja blogien määrä
+  if (blogs.length === 0) return {};
+  const authors = blogs.map((blog) => blog.author);
+
+  const counts = {};
+  for (const count of authors) {
+    counts[count] = counts[count] ? counts[count] + 1 : 1;
+  }
+
+  let author_with_most_blogs = "";
+  let maxBlogs = 0;
+  for (let [author, blogs] of Object.entries(counts)) {
+    if (blogs > maxBlogs) {
+      maxBlogs = blogs;
+      author_with_most_blogs = author;
+    }
+  }
+
+  return {
+    author: author_with_most_blogs,
+    blogs: maxBlogs,
+  };
 };
 
 const mostLikes = (blogs) => {
@@ -26,4 +45,4 @@ const mostLikes = (blogs) => {
   // palauta author ja likejen yhteismäärä
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog };
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
