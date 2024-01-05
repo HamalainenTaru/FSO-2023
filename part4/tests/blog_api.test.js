@@ -11,6 +11,7 @@ beforeEach(async () => {
   await Blog.insertMany(helper.initialBlogs);
 });
 
+// GET
 describe("Testing GET methods", () => {
   test("All blogs are retuned as JSON", async () => {
     await api
@@ -26,70 +27,75 @@ describe("Testing GET methods", () => {
   });
 });
 
-test("Blogs have id", async () => {
-  const blogs = await helper.blogsInDb();
-  const blog = blogs[0];
-  expect(blog.id).toBeDefined();
+// OTHER
+describe("Other tests", () => {
+  test("Blogs have id", async () => {
+    const blogs = await helper.blogsInDb();
+    const blog = blogs[0];
+    expect(blog.id).toBeDefined();
+  });
 });
 
-test("Testing POST method", async () => {
-  const newBlog = {
-    title: "My test blog",
-    author: "Thats me",
-    url: "ttps://reactpatterns.com/",
-    likes: 34,
-  };
+// POST
+describe("Valid blogs can be posted", () => {
+  test("Testing POST method", async () => {
+    const newBlog = {
+      title: "My test blog",
+      author: "Thats me",
+      url: "ttps://reactpatterns.com/",
+      likes: 34,
+    };
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-  const notesAtTheEnd = await helper.blogsInDb();
-  expect(notesAtTheEnd).toHaveLength(helper.initialBlogs.length + 1);
-});
+    const notesAtTheEnd = await helper.blogsInDb();
+    expect(notesAtTheEnd).toHaveLength(helper.initialBlogs.length + 1);
+  });
+  test("POST request dont contain title", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const newBlog = {
+      author: "zero likes",
+      url: "ttps://reactpatterns.com/",
+    };
 
-test("if likes is not given to blog, value is 0 by default", async () => {
-  const newBlog = {
-    title: "this has zero likes",
-    author: "zero likes",
-    url: "ttps://reactpatterns.com/",
-  };
+    await api.post("/api/blogs").send(newBlog).expect(400);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtStart.length === blogsAtEnd.length);
+  });
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+  test("POST request dont contain url", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const newBlog = {
+      title: "Test title",
+      author: "zero likes",
+    };
 
-  const blogs = await helper.blogsInDb();
-  const addedBlog = blogs.find((blog) => blog.author === "zero likes");
-  expect(addedBlog.likes === 0);
-});
+    await api.post("/api/blogs").send(newBlog).expect(400);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtStart.length === blogsAtEnd.length);
+  });
 
-test("POST request dont contain title", async () => {
-  const blogsAtStart = await helper.blogsInDb();
-  const newBlog = {
-    author: "zero likes",
-    url: "ttps://reactpatterns.com/",
-  };
+  test("if likes is not given to blog, value is 0 by default", async () => {
+    const newBlog = {
+      title: "this has zero likes",
+      author: "zero likes",
+      url: "ttps://reactpatterns.com/",
+    };
 
-  await api.post("/api/blogs").send(newBlog).expect(400);
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtStart.length === blogsAtEnd.length);
-});
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-test("POST request dont contain url", async () => {
-  const blogsAtStart = await helper.blogsInDb();
-  const newBlog = {
-    title: "Test title",
-    author: "zero likes",
-  };
-
-  await api.post("/api/blogs").send(newBlog).expect(400);
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtStart.length === blogsAtEnd.length);
+    const blogs = await helper.blogsInDb();
+    const addedBlog = blogs.find((blog) => blog.author === "zero likes");
+    expect(addedBlog.likes === 0);
+  });
 });
 
 afterAll(async () => {
