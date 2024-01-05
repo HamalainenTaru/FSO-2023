@@ -26,6 +26,12 @@ describe("Testing GET methods", () => {
   });
 });
 
+test("Blogs have id", async () => {
+  const blogs = await helper.blogsInDb();
+  const blog = blogs[0];
+  expect(blog.id).toBeDefined();
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
