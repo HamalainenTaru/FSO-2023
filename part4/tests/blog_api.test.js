@@ -68,6 +68,30 @@ test("if likes is not given to blog, value is 0 by default", async () => {
   expect(addedBlog.likes === 0);
 });
 
+test("POST request dont contain title", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const newBlog = {
+    author: "zero likes",
+    url: "ttps://reactpatterns.com/",
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtStart.length === blogsAtEnd.length);
+});
+
+test("POST request dont contain url", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const newBlog = {
+    title: "Test title",
+    author: "zero likes",
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtStart.length === blogsAtEnd.length);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
