@@ -37,8 +37,8 @@ describe("Other tests", () => {
 });
 
 // POST
-describe("Valid blogs can be posted", () => {
-  test("Testing POST method", async () => {
+describe("Testing POST methods", () => {
+  test("Valid blog can be added to db", async () => {
     const newBlog = {
       title: "My test blog",
       author: "Thats me",
@@ -114,6 +114,25 @@ describe("DELETE", () => {
     // deleted content dont exist in db
     const contents = blogsAtEnd.map((blog) => blog.title);
     expect(contents).not.toContain(blogToDelete.title);
+  });
+});
+
+// PUT
+describe("Testing PUT methods", () => {
+  test("updating likes returns new likes", async () => {
+    let blogs = await helper.blogsInDb();
+    const blogToUpdate = blogs[0];
+
+    const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 };
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200);
+
+    blogs = await helper.blogsInDb();
+
+    expect(blogs[0].likes).toEqual(blogToUpdate.likes + 1);
   });
 });
 
