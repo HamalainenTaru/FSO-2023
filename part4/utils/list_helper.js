@@ -41,8 +41,20 @@ const mostBlogs = (blogs) => {
 };
 
 const mostLikes = (blogs) => {
-  // TODO: palauta author, jolla on eniten tykkäyksiä blogeissaan
-  // palauta author ja likejen yhteismäärä
+  if (blogs.length === 0) return {};
+  let likesCount = blogs.reduce((likesCount, blog) => {
+    likesCount[blog.author] = (likesCount[blog.author] || 0) + blog.likes;
+    return likesCount;
+  }, {});
+
+  let max = Math.max(...Object.values(likesCount));
+  let mostLikes = Object.keys(likesCount).filter(
+    (author) => likesCount[author] === max
+  );
+  return {
+    author: mostLikes[0],
+    likes: max,
+  };
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };

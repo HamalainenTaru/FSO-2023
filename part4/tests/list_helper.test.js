@@ -146,3 +146,35 @@ describe("most blogs", () => {
     expect(result).toEqual(authorAndBlogs);
   });
 });
+
+// testing for most likes
+describe("Most likes", () => {
+  test("list has multiple blogs", () => {
+    const result = listHelper.mostLikes(blogs);
+    expect(result).toEqual({
+      author: "Edsger W. Dijkstra",
+      likes: 17,
+    });
+  });
+  test("blog list is empty", () => {
+    const result = listHelper.mostLikes([]);
+    expect(result).toEqual({});
+  });
+  test("list has only one blog", () => {
+    const blogs = [
+      {
+        _id: "5a422aa71b54a676234d17f8",
+        title: "Go To Statement Considered Harmful",
+        author: "Edsger W. Dijkstra",
+        url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+        likes: 5,
+        __v: 0,
+      },
+    ];
+    const result = listHelper.mostLikes(blogs);
+    expect(result).toEqual({
+      author: "Edsger W. Dijkstra",
+      likes: 5,
+    });
+  });
+});
