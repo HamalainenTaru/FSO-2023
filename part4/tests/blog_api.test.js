@@ -98,6 +98,25 @@ describe("Valid blogs can be posted", () => {
   });
 });
 
+describe("DELETE", () => {
+  test("deleting blog", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+
+    const blogToDelete = blogsAtStart[0];
+
+    // responding with correct statuscode
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    // blogs count is less
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd.length === blogsAtStart.length - 1);
+
+    // deleted content dont exist in db
+    const contents = blogsAtEnd.map((blog) => blog.title);
+    expect(contents).not.toContain(blogToDelete.title);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
