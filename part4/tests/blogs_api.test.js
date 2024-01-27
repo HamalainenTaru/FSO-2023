@@ -3,6 +3,7 @@ const supertest = require("supertest");
 const app = require("../app");
 const api = supertest(app);
 const Blog = require("../models/blog");
+const blog = require("../models/blog");
 
 const initialBlogs = [
   {
@@ -38,6 +39,13 @@ test("blogs are returned as json", async () => {
 test("amount of blogs are equal to initialBlogs", async () => {
   const { body } = await api.get("/api/blogs");
   expect(body).toHaveLength(initialBlogs.length);
+});
+
+test("blog has id", async () => {
+  const { body } = await api.get("/api/blogs");
+  body.forEach((blog) => {
+    expect(blog.id).toBeDefined();
+  });
 });
 
 afterAll(async () => {
