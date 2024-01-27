@@ -54,4 +54,17 @@ const dummy = (blogs) => 1;
 const totalLikes = (blogs) =>
   blogs.map((blog) => blog.likes).reduce((n, i) => n + i, 0);
 
-module.exports = { blogs, dummy, totalLikes };
+const favoriteBlog = (blogs) => {
+  if (blogs.length === 0) return {};
+  const max = blogs.reduce(
+    (max, next) => (max = max.likes > next.likes ? max : next)
+  );
+
+  return {
+    title: max.title,
+    author: max.author,
+    likes: max.likes,
+  };
+};
+
+module.exports = { blogs, dummy, totalLikes, favoriteBlog };
