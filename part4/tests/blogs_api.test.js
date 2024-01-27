@@ -48,6 +48,44 @@ test("blog has id", async () => {
   });
 });
 
+test("posting blog increases amount of blogs by one", async () => {
+  const blog = {
+    title: "test title",
+    author: "test author",
+    url: "test url",
+    likes: 10,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(blog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtTheEnd = await api.get("/api/blogs");
+  const { body } = blogsAtTheEnd;
+  expect(body).toHaveLength(initialBlogs.length + 1);
+});
+
+test("if likes is not given, likes equal to 0", async () => {
+  const blog = {
+    title: "test title",
+    author: "test author",
+    url: "test url",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(blog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtTheEnd = await api.get("/api/blogs");
+  const { body } = blogsAtTheEnd;
+
+  expect(body[body.length - 1].likes).toBe(0);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
