@@ -17,6 +17,12 @@ blogsRouter
       likes: body.likes,
     });
 
+    if (!body.title || !body.url) {
+      return response
+        .status(400)
+        .json({ title: "Bad request", message: "title or url missing!" });
+    }
+
     const savedBlog = await blog.save();
     response.status(201).json(savedBlog);
   });

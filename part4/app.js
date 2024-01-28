@@ -5,7 +5,7 @@ const config = require("./utils/config");
 const logger = require("./utils/logger");
 const mongoose = require("mongoose");
 const blogsRouter = require("./controllers/blogs");
-// middleware
+const middleware = require("./utils/middleware");
 const app = express();
 
 // connect to MongoDB
@@ -21,11 +21,13 @@ mongoose
 
 // Middlewares
 app.use(cors());
+app.use(express.static("public"));
 app.use(express.json());
+app.use(middleware.requestLogger);
 
 app.use("/api/blogs", blogsRouter);
 
-// Unknown ednpoint
-// error handler
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 
 module.exports = app;

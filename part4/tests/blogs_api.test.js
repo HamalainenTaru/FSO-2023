@@ -3,7 +3,6 @@ const supertest = require("supertest");
 const app = require("../app");
 const api = supertest(app);
 const Blog = require("../models/blog");
-const blog = require("../models/blog");
 
 const initialBlogs = [
   {
@@ -29,61 +28,92 @@ beforeEach(async () => {
   await Blog.insertMany(initialBlogs);
 });
 
-test("blogs are returned as json", async () => {
-  await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
-});
+describe("Testing GET request", () => {
+  test("blogs are returned as json", async () => {
+    await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  });
 
-test("amount of blogs are equal to initialBlogs", async () => {
-  const { body } = await api.get("/api/blogs");
-  expect(body).toHaveLength(initialBlogs.length);
-});
-
-test("blog has id", async () => {
-  const { body } = await api.get("/api/blogs");
-  body.forEach((blog) => {
-    expect(blog.id).toBeDefined();
+  test("amount of blogs are equal to initialBlogs", async () => {
+    const { body } = await api.get("/api/blogs");
+    expect(body).toHaveLength(initialBlogs.length);
   });
 });
 
-test("posting blog increases amount of blogs by one", async () => {
-  const blog = {
-    title: "test title",
-    author: "test author",
-    url: "test url",
-    likes: 10,
-  };
-
-  await api
-    .post("/api/blogs")
-    .send(blog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
-
-  const blogsAtTheEnd = await api.get("/api/blogs");
-  const { body } = blogsAtTheEnd;
-  expect(body).toHaveLength(initialBlogs.length + 1);
+describe("Testing single blog", () => {
+  test("blog has id", async () => {
+    const { body } = await api.get("/api/blogs");
+    body.forEach((blog) => {
+      expect(blog.id).toBeDefined();
+    });
+  });
 });
 
-test("if likes is not given, likes equal to 0", async () => {
-  const blog = {
-    title: "test title",
-    author: "test author",
-    url: "test url",
-  };
+describe("Testing POST request", () => {
+  test("posting blog increases amount of blogs by one", async () => {
+    const blog = {
+      title: "test title",
+      author: "test author",
+      url: "test url",
+      likes: 10,
+    };
 
-  await api
-    .post("/api/blogs")
-    .send(blog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+    await api
+      .post("/api/blogs")
+      .send(blog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-  const blogsAtTheEnd = await api.get("/api/blogs");
-  const { body } = blogsAtTheEnd;
+    const blogsAtTheEnd = await api.get("/api/blogs");
+    const { body } = blogsAtTheEnd;
+    expect(body).toHaveLength(initialBlogs.length + 1);
+  });
 
-  expect(body[body.length - 1].likes).toBe(0);
+  test("if likes is not given, likes equal to 0", async () => {
+    const blog = {
+      title: "test title",
+      author: "test author",
+      url: "test url",
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(blog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const blogsAtTheEnd = await api.get("/api/blogs");
+    const { body } = blogsAtTheEnd;
+
+    expect(body[body.length - 1].likes).toBe(0);
+  });
+
+  test("Posting blog without title", async () => {
+    const blog = {
+      author: "test author",
+      url: "test url",
+    };
+
+    await api.post("/api/blogs").send(blog).expect(400);
+
+    const blogsAtTheEnd = await api.get("/api/blogs");
+    expect(blogsAtTheEnd.body).toHaveLength(initialBlogs.length);
+  });
+
+  test("Posting blog without url", async () => {
+    const blog = {
+      title: "my title",
+      author: "test author",
+      likes: 1,
+    };
+
+    await api.post("/api/blogs").send(blog).expect(400);
+
+    const blogsAtTheEnd = await api.get("/api/blogs");
+    expect(blogsAtTheEnd.body).toHaveLength(initialBlogs.length);
+  });
 });
 
 afterAll(async () => {
